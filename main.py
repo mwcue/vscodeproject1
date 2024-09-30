@@ -16,6 +16,19 @@ CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 REDIRECT_URI = os.getenv('REDIRECT_URI')
 
+#error handling for the environment vars
+def get_env_variable(var_name):
+    value = os.getenv(var_name)
+    if value is None:
+        raise ValueError(f"Missing environment variable: {var_name}")
+    return value
+    
+client_id = get_env_variable("SPOTIFY_CLIENT_ID")
+client_secret = get_env_variable("SPOTIFY_CLIENT_SECRET")
+
+
+
+
 # Check if all required environment variables are set
 if not all([CLIENT_ID, CLIENT_SECRET, REDIRECT_URI]):
     st.error("Missing environment variables. Please check your .env file.")
