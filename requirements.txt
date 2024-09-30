@@ -1,0 +1,10 @@
+made inside VScodeProjects environment made inside vs code
+
+python 3.10.14
+
+spotipy==2.24.0
+streamlit==1.38.0
+pandas==2.2.3
+python-dotenv==0.19.1
+
+CHECK THE VERSION ------------->>>>>>> pip install python-dotenv
