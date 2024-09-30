@@ -1,12 +1,12 @@
-import os
+#import os
 import streamlit as st
 import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+# load_dotenv()
 
 # Set up Streamlit page configuration
 st.set_page_config(page_title='Spotify Song Analysis', page_icon=':musical_note:')
@@ -14,23 +14,24 @@ st.set_page_config(page_title='Spotify Song Analysis', page_icon=':musical_note:
 # Retrieve Spotify API credentials from environment variables
 #CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 #CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
-REDIRECT_URI = os.getenv('REDIRECT_URI')
+#REDIRECT_URI = os.getenv('REDIRECT_URI')
 
 #error handling for the environment vars
 def get_env_variable(var_name):
-    value = os.getenv(var_name)
-    if value is None:
+    try:
+        return st.secrets[var_name]
+    except KeyError:
         raise ValueError(f"Missing environment variable: {var_name}")
-    return value
     
 CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
+REDIRECT_URI = get_env_variable("REDIRECT_URI")
 
 
 # Check if all required environment variables are set
-if not all([CLIENT_ID, CLIENT_SECRET, REDIRECT_URI]):
-    st.error("Missing environment variables. Please check your .env file.")
-    st.stop()
+#if not all([CLIENT_ID, CLIENT_SECRET, REDIRECT_URI]):
+#    st.error("Missing environment variables. Please check your .env file.")
+#    st.stop()
 
 # Initialize Spotify authentication
 def get_spotify_auth():
