@@ -15,11 +15,6 @@ def get_spotify_auth():
         show_dialog=True
     )
 
-def main():
-        # Debug: Print all secrets (remove in production)
-    st.write("Available secrets:", list(st.secrets.keys()))
-    st.write(f"Debug - REDIRECT_URI: {REDIRECT_URI}")
-    
 def get_env_variable(var_name):
     try:
         value = st.secrets[var_name]
@@ -48,7 +43,10 @@ def get_spotify_auth():
 def main():
     st.title('Analysis of Your Top Spotify Tracks')
     st.write('Discover insights about your Spotify listening habits.')
-
+        # Debug: Print all secrets (remove in production)
+    st.write("Available secrets:", list(st.secrets.keys()))
+    st.write(f"Debug - REDIRECT_URI: {REDIRECT_URI}")
+    
     # Check for authentication status
     if 'spotify_auth' not in st.session_state:
         st.session_state['spotify_auth'] = None
