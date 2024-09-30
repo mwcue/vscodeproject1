@@ -18,10 +18,10 @@ def get_spotify_auth():
 def get_env_variable(var_name):
     try:
         value = st.secrets[var_name]
-        st.write(f"Successfully retrieved {var_name}")  # Debug line
+        st.write(f"Debug - {var_name}: {value}")  # Always print the value
         return value
     except KeyError:
-        st.error(f"Missing environment variable: {var_name}")  # More visible error
+        st.error(f"Missing environment variable: {var_name}")
         raise ValueError(f"Missing environment variable: {var_name}")
         
 # Check if all required environment variables are set
@@ -31,16 +31,23 @@ def get_env_variable(var_name):
 
 # Initialize Spotify authentication
 def get_spotify_auth():
+    encoded_redirect_uri = quote(REDIRECT_URI)
+    st.write(f"Debug - Encoded REDIRECT_URI: {encoded_redirect_uri}")
     return SpotifyOAuth(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
-        redirect_uri=REDIRECT_URI,
+        redirect_uri=encoded_redirect_uri,
         scope='user-top-read',
         show_dialog=True
     )
 
 # Main function to run the Streamlit app
 def main():
+    # debug: print 3 items (remove in production)
+    st.write("Debug - Beginning of main()")
+    st.write(f"Debug - REDIRECT_URI: {REDIRECT_URI}")
+    st.write("Debug - Available secrets:", list(st.secrets.keys()))
+    
     st.title('Analysis of Your Top Spotify Tracks')
     st.write('Discover insights about your Spotify listening habits.')
         # Debug: Print all secrets (remove in production)
@@ -67,7 +74,9 @@ def main():
 
     # If not authenticated, provide login link
     if st.session_state['spotify_auth'] is None:
-        auth_manager = get_spotify_auth()
+        #debug write line (remove in production)
+        st.write("Debug - About to call get_spotify_auth()")
+        auth_manager = get_spotify_auth()  
         auth_url = auth_manager.get_authorize_url()
         st.write(f"Please [click here]({auth_url}) to login to Spotify.")
         st.write("After logging in, you'll be redirected back to this app.")
