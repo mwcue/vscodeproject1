@@ -23,10 +23,8 @@ def get_env_variable(var_name):
         raise ValueError(f"Missing environment variable: {var_name}")
     return value
     
-client_id = get_env_variable("SPOTIFY_CLIENT_ID")
-client_secret = get_env_variable("SPOTIFY_CLIENT_SECRET")
-
-
+CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
+CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
 
 
 # Check if all required environment variables are set
