@@ -22,12 +22,33 @@ def get_env_variable(var_name):
         return st.secrets[var_name]
     except KeyError:
         raise ValueError(f"Missing environment variable: {var_name}")
+        
+# error handling for the variable assignments
+#CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
+#CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
+#REDIRECT_URI = get_env_variable("REDIRECT_URI")
+try:
+    CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
+    CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
+    REDIRECT_URI = get_env_variable("REDIRECT_URI")
+except ValueError as e:
+    st.error(str(e))
+    st.stop()
+
+#error handling for streamlit secrets
+def main():
+    # Debug: Print all secrets (remove in production)
+    st.write("Available secrets:", list(st.secrets.keys()))
     
-CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
-CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
-REDIRECT_URI = get_env_variable("REDIRECT_URI")
-
-
+def get_env_variable(var_name):
+    try:
+        value = st.secrets[var_name]
+        st.write(f"Successfully retrieved {var_name}")  # Debug line
+        return value
+    except KeyError:
+        st.error(f"Missing environment variable: {var_name}")  # More visible error
+        raise ValueError(f"Missing environment variable: {var_name}")
+        
 # Check if all required environment variables are set
 #if not all([CLIENT_ID, CLIENT_SECRET, REDIRECT_URI]):
 #    st.error("Missing environment variables. Please check your .env file.")
