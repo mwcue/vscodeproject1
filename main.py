@@ -16,8 +16,9 @@ def get_spotify_auth():
     )
 
 def main():
-    # Debug: Print all secrets (remove in production)
+        # Debug: Print all secrets (remove in production)
     st.write("Available secrets:", list(st.secrets.keys()))
+    st.write(f"Debug - REDIRECT_URI: {REDIRECT_URI}")
     
 def get_env_variable(var_name):
     try:
