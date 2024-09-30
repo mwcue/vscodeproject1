@@ -1,19 +1,15 @@
 import streamlit as st
 from streamlit.web import utils
 from urllib.parse import quote
+import pandas as pd
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+
+#debug statement
+st.write("Debug - Script started")
 
 # Add this near the top of your script, after imports
 utils.add_route("/callback", lambda: None, method="GET")
-
-def get_spotify_auth():
-    encoded_redirect_uri = quote(REDIRECT_URI)
-    return SpotifyOAuth(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        redirect_uri=encoded_redirect_uri,
-        scope='user-top-read',
-        show_dialog=True
-    )
 
 def get_env_variable(var_name):
     try:
@@ -40,6 +36,17 @@ def get_spotify_auth():
         scope='user-top-read',
         show_dialog=True
     )
+
+# Place this before your main() function
+st.write("Debug - About to retrieve environment variables")
+try:
+    CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
+    CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
+    REDIRECT_URI = get_env_variable("REDIRECT_URI")
+    st.write("Debug - Environment variables retrieved successfully")
+except ValueError as e:
+    st.error(str(e))
+    st.stop()
 
 # Main function to run the Streamlit app
 def main():
@@ -131,4 +138,7 @@ def main():
         st.session_state['spotify_auth'] = None  # Reset auth on error
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {str(e)}")
