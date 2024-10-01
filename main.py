@@ -92,7 +92,7 @@ def main():
         st.write("Error type:", type(e).__name__)
         st.write(traceback.format_exc())
     
-   def get_access_token(auth_code):
+def get_access_token(auth_code):
     token_url = "https://accounts.spotify.com/api/token"
     authorization = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
     headers = {
