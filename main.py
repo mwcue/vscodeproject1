@@ -89,7 +89,7 @@ def main():
 
             
         # bar chart w/all freatures
-        numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
+        numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
 
         st.subheader('Visual Comparison of Audio Features')
         st.bar_chart(df[numerical_columns], height=400)
