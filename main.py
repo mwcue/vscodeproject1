@@ -73,9 +73,9 @@ def main():
     st.bar_chart(df[fewer_numerical_columns], height=600)
 
     # dropped more features
-    even_fewer_numerical_columns = ['speechiness', 'acousticness', 'instrumentalness', 'liveness']
-    st.subheader('Visual Comparison of (fewer) Audio Features')
-    st.bar_chart(df[even_fewer_numerical_columns], height=600)
+    # even_fewer_numerical_columns = ['speechiness', 'acousticness', 'instrumentalness', 'liveness']
+    # st.subheader('Visual Comparison of (fewer) Audio Features')
+    # st.bar_chart(df[even_fewer_numerical_columns], height=600)
     
     # heat map correlation of all features
     st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
