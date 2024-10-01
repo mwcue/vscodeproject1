@@ -32,7 +32,10 @@ if not all([CLIENT_ID, CLIENT_SECRET, REDIRECT_URI]):
 # Initialize Spotify authentication
 def get_spotify_auth():
     encoded_redirect_uri = quote(REDIRECT_URI)
+    st.write(f"Debug - Original REDIRECT_URI: {REDIRECT_URI}")
     st.write(f"Debug - Encoded REDIRECT_URI: {encoded_redirect_uri}")
+    st.write(f"Debug - CLIENT_ID: {CLIENT_ID[:5]}...") # Show first 5 characters
+    st.write(f"Debug - CLIENT_SECRET: {CLIENT_SECRET[:5]}...") # Show first 5 characters
     return SpotifyOAuth(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
@@ -50,6 +53,9 @@ def main():
     if 'spotify_auth' not in st.session_state:
         st.session_state['spotify_auth'] = None
 
+    # debug line
+    st.write("Debug - spotify_auth status:", 'spotify_auth' in st.session_state)
+    
     # Handle Spotify authentication callback
     query_params = st.query_params
     if 'code' in query_params:
@@ -95,6 +101,9 @@ def main():
     except Exception as e:
         st.error(f"An error occurred while processing Spotify data: {str(e)}")
         st.session_state['spotify_auth'] = None  # Reset auth on error
+
+# debug line
+st.write("Debug - Script reached end without errors")
 
 if __name__ == "__main__":
     try:
