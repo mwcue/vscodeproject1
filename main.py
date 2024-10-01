@@ -77,8 +77,20 @@ def main():
         st.subheader('Audio Features of Top Tracks')
         st.write(df)
         
+        # bar chart w/all freatures
         numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
+
+        st.subheader('Visual Comparison of Audio Features')
+        st.bar_chart(df[numerical_columns], height=400)
         
+        st.subheader('Correlation Heatmap of Audio Features')
+        correlation_matrix = df[numerical_columns].corr()
+        st.write(correlation_matrix)
+
+            
+        # bar chart w/all freatures
+        numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
+
         st.subheader('Visual Comparison of Audio Features')
         st.bar_chart(df[numerical_columns], height=400)
         
