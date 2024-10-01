@@ -5,6 +5,7 @@ import pandas as pd
 from urllib.parse import quote
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import time
 
 # Set up Streamlit page configuration
 st.set_page_config(page_title='Spotify Top Tracks Analysis', page_icon=':musical_note:')
