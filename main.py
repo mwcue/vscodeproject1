@@ -58,22 +58,31 @@ def main():
     
     st.subheader('Audio Features of Top Tracks')
     st.write(df)
-    
+
+    #all features
     numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
 
-    st.subheader('Visual Comparison of Audio Features')
+    st.subheader('Visual Comparison of all Audio Features')
     st.bar_chart(df[numerical_columns], height=600)
     
     st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
     correlation_matrix = df[numerical_columns].corr()
-    
+
+   # dropped some features
+    numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
+
+    st.subheader('Visual Comparison of (fewer) Audio Features')
+    st.bar_chart(df[numerical_columns], height=600)
+
+    #heat map correlation of all features
+    st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
+    correlation_matrix = df[numerical_columns].corr()
     # Create a mask for the lower triangle
     mask = np.triu(np.ones_like(correlation_matrix, dtype=bool))
-    
     # Create the heatmap
     plt.figure(figsize=(10, 8))
     sns.heatmap(correlation_matrix, mask=mask, annot=False, cmap='Reds', vmin=-1, vmax=1, square=True)
-    plt.title('Correlation Heatmap (Lower Triangle)')
+    plt.title('Correlation Heatmap (Lower Triangle, all features)')
     st.pyplot(plt)
 
 if __name__ == "__main__":
