@@ -1,4 +1,48 @@
+import streamlit as st
+import base64
+import requests
+import pandas as pd
+from urllib.parse import quote
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+
+# Set up Streamlit page configuration
+st.set_page_config(page_title='Spotify Top Tracks Analysis', page_icon=':musical_note:')
+
+# Retrieve Spotify API credentials
+def get_env_variable(var_name):
+    if var_name == "REDIRECT_URI":
+        return "https://vscodeproject1mwc.streamlit.app/"
+    try:
+        value = st.secrets[var_name]
+        return value
+    except KeyError:
+        st.error(f"Missing secret: {var_name}")
+        return None
+
+CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
+CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
+REDIRECT_URI = "https://vscodeproject1mwc.streamlit.app/"
+
+# Initialize Spotify client
+def get_spotify_client():
+    auth_manager = SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        scope='user-top-read',
+        show_dialog=True
+    )
+    return spotipy.Spotify(auth_manager=auth_manager)
+
 def main():
+    st.title('Spotify Top Tracks Analysis')
+    st.write('Discover insights about your top Spotify tracks.')
+
+    # Rest of your main function code here...
+
+if __name__ == "__main__":
+    main()def main():
     st.title('Spotify Top Tracks Analysis')
     st.write('Discover insights about your top Spotify tracks.')
 
