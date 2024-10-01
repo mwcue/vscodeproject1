@@ -38,7 +38,7 @@ def get_top_tracks(sp):
             
 # Main app logic
 def main():
-    st.title('Spotify Top Tracks Analysis')
+    st.title('Spotify Top', top_track_limit, 'Tracks Analysis')
     st.write('Discover insights about top Spotify tracks.')
 
     sp = get_spotify_client()
@@ -62,8 +62,8 @@ def main():
     st.subheader('Audio Features of Top Tracks')
     st.write(df)
 
-    #all features
-    numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
+    # all features (but dropped 'loudness' b/c messed up the graph more)
+    numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
 
     st.subheader('Visual Comparison of all Audio Features')
     st.bar_chart(df[numerical_columns], height=500)
