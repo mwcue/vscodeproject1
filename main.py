@@ -27,8 +27,10 @@ def get_spotify_client():
         client_secret=CLIENT_SECRET
     )
     return spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-#variable for top x tracks
+
+# variable for top x tracks
 top_track_limit = 50
+
 def get_top_tracks(sp):
     playlist_id = '37i9dQZEVXbMDoHDwVN2tF'  # Global Top 50 playlist
     results = sp.playlist_tracks(playlist_id, limit=top_track_limit)
@@ -64,16 +66,16 @@ def main():
     numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
 
     st.subheader('Visual Comparison of all Audio Features')
-    st.bar_chart(df[numerical_columns], height=600)
+    st.bar_chart(df[numerical_columns], height=800)
     
     st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
     correlation_matrix = df[numerical_columns].corr()
 
    # dropped some features
-    numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
+    fewer_numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
 
     st.subheader('Visual Comparison of (fewer) Audio Features')
-    st.bar_chart(df[numerical_columns], height=800)
+    st.bar_chart(df[fewer_numerical_columns], height=600)
 
     #heat map correlation of all features
     st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
