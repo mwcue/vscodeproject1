@@ -66,7 +66,7 @@ def main():
     numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
 
     st.subheader('Visual Comparison of all Audio Features')
-    st.bar_chart(df[numerical_columns], height=800)
+    st.bar_chart(df[numerical_columns], height=500)
     
     st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
     correlation_matrix = df[numerical_columns].corr()
