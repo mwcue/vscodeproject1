@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Set up Streamlit page configuration
 st.set_page_config(page_title='Spotify Top Tracks Analysis', page_icon=':musical_note:')
@@ -31,7 +31,7 @@ def get_top_tracks(sp):
     playlist_id = '37i9dQZEVXbMDoHDwVN2tF'  # Global Top 50 playlist
     results = sp.playlist_tracks(playlist_id, limit=50)
     return results['items']
-            
+
 # Main app logic
 def main():
     st.title('Spotify Top Tracks Analysis')
@@ -69,11 +69,24 @@ def main():
     # Create a mask for the lower triangle
     mask = np.triu(np.ones_like(correlation_matrix, dtype=bool))
     
-    # Create the heatmap
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(correlation_matrix, mask=mask, annot=False, cmap='Reds', vmin=-1, vmax=1, square=True)
-    plt.title('Correlation Heatmap (Lower Triangle)')
-    st.pyplot(plt)
+    # Create the heatmap using matplotlib
+    fig, ax = plt.subplots(figsize=(10, 8))
+    im = ax.imshow(np.ma.masked_array(correlation_matrix, mask), cmap='Reds', vmin=-1, vmax=1)
+    
+    # Add colorbar
+    cbar = ax.figure.colorbar(im, ax=ax)
+    
+    # Set ticks and labels
+    ax.set_xticks(np.arange(len(numerical_columns)))
+    ax.set_yticks(np.arange(len(numerical_columns)))
+    ax.set_xticklabels(numerical_columns, rotation=45, ha='right')
+    ax.set_yticklabels(numerical_columns)
+    
+    # Add title
+    ax.set_title('Correlation Heatmap (Lower Triangle)')
+    
+    # Display the plot in Streamlit
+    st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
