@@ -1,6 +1,7 @@
 import streamlit as st
 import base64
 import requests
+from urllib.parse import quote, unquote
 
 # Set up Streamlit page configuration
 st.set_page_config(page_title='Spotify API Debug', page_icon=':bug:')
@@ -33,13 +34,21 @@ def main():
     st.write('This page is for debugging Spotify API authentication issues.')
 
     # Generate the authorization URL manually
-    auth_url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope=user-top-read"
+    encoded_redirect_uri = quote(REDIRECT_URI)
+    auth_url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={encoded_redirect_uri}&scope=user-top-read"
     st.write(f"Debug - Generated auth URL: {auth_url}")
     st.write(f"Please [click here]({auth_url}) to initiate Spotify login.")
 
     # Check for the authorization code in the URL
     query_params = st.query_params
-    if 'code' in query_params:
+    st.write(f"Debug - Full query parameters: {query_params}")
+    
+    if 'error' in query_params:
+        st.error(f"Authentication error: {query_params['error']}")
+        st.write(f"Debug - Full error description: {query_params.get('error_description', 'No description provided')}")
+        if 'state' in query_params:
+            st.write(f"Debug - State parameter: {query_params['state']}")
+    elif 'code' in query_params:
         auth_code = query_params['code']
         st.write(f"Debug - Received auth code: {auth_code[:5]}...{auth_code[-5:]}")
 
@@ -71,6 +80,9 @@ def main():
             st.error(f"An error occurred during token exchange: {str(e)}")
     else:
         st.write("Waiting for authorization code...")
+
+    # Display the current page URL
+    st.write(f"Debug - Current page URL: {st.experimental_get_query_params()}")
 
 if __name__ == "__main__":
     main()
