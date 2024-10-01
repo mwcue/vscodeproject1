@@ -77,27 +77,36 @@ def main():
         st.subheader('Audio Features of Top Tracks')
         st.write(df)
         
-        # bar chart w/all freatures
+        # bar chart w/all numerical features
         numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
 
-        st.subheader('Visual Comparison of Audio Features')
-        st.bar_chart(df[numerical_columns], height=400)
+        st.subheader('Visual Comparison of Audio Features (all numerical features)')
+        st.bar_chart(df[numerical_columns], height=800)
         
-        st.subheader('Correlation Heatmap of Audio Features')
+        st.subheader('Correlation Heatmap of Audio Features (all)')
         correlation_matrix = df[numerical_columns].corr()
         st.write(correlation_matrix)
 
-            
-        # bar chart w/all freatures
+        # bar chart w/2 freatures dropped
         numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
 
-        st.subheader('Visual Comparison of Audio Features')
-        st.bar_chart(df[numerical_columns], height=400)
+        st.subheader('2: Visual Comparison of Audio Features')
+        st.bar_chart(df[numerical_columns], height=600)
         
-        st.subheader('Correlation Heatmap of Audio Features')
+        st.subheader('2: Correlation Heatmap of Audio Features')
         correlation_matrix = df[numerical_columns].corr()
         st.write(correlation_matrix)
+
+        # bar chart w/4 freatures dropped
+        numerical_columns = ['danceability', 'speechiness', 'acousticness', 'instrumentalness']
+
+        st.subheader('3: Visual Comparison of Audio Features')
+        st.bar_chart(df[numerical_columns], height=400)
         
+        st.subheader('3: Correlation Heatmap of Audio Features')
+        correlation_matrix = df[numerical_columns].corr()
+        st.write(correlation_matrix)
+    
     except Exception as e:
         st.error(f"An error occurred while processing Spotify data: {str(e)}")
         st.write("Error details:", e)
