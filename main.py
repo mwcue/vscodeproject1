@@ -1,7 +1,7 @@
 import streamlit as st
 import base64
 import requests
-from urllib.parse import quote, unquote
+from urllib.parse import quote
 
 # Set up Streamlit page configuration
 st.set_page_config(page_title='Spotify API Debug', page_icon=':bug:')
@@ -13,7 +13,7 @@ st.write("Debug - Available secrets:", list(st.secrets.keys()))
 def get_env_variable(var_name):
     try:
         value = st.secrets[var_name]
-        st.write(f"Debug - Retrieved {var_name}: {value[:5]}...{value[-5:]}")  # Show first and last 5 characters
+        st.write(f"Debug - Retrieved {var_name}: {value}")  # Show full value for debugging
         return value
     except KeyError:
         st.error(f"Missing secret: {var_name}")
@@ -40,16 +40,16 @@ def main():
     st.write(f"Please [click here]({auth_url}) to initiate Spotify login.")
 
     # Check for the authorization code in the URL
-    query_params = st.query_params
+    query_params = st.experimental_get_query_params()
     st.write(f"Debug - Full query parameters: {query_params}")
     
     if 'error' in query_params:
-        st.error(f"Authentication error: {query_params['error']}")
-        st.write(f"Debug - Full error description: {query_params.get('error_description', 'No description provided')}")
+        st.error(f"Authentication error: {query_params['error'][0]}")
+        st.write(f"Debug - Full error description: {query_params.get('error_description', ['No description provided'])[0]}")
         if 'state' in query_params:
-            st.write(f"Debug - State parameter: {query_params['state']}")
+            st.write(f"Debug - State parameter: {query_params['state'][0]}")
     elif 'code' in query_params:
-        auth_code = query_params['code']
+        auth_code = query_params['code'][0]
         st.write(f"Debug - Received auth code: {auth_code[:5]}...{auth_code[-5:]}")
 
         # Exchange the authorization code for an access token
