@@ -35,9 +35,27 @@ def get_spotify_client():
     )
     return spotipy.Spotify(auth_manager=auth_manager)
 
+def get_top_tracks_with_retry(sp, limit=50, time_range='medium_term', max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            st.write(f"Attempt {attempt + 1} to fetch top tracks...")
+            return sp.current_user_top_tracks(limit=limit, time_range=time_range)
+        except spotipy.exceptions.SpotifyException as e:
+            if e.http_status == 429:  # Too Many Requests
+                st.warning(f"Rate limit hit. Waiting for {e.headers.get('Retry-After', 5)} seconds.")
+                time.sleep(int(e.headers.get('Retry-After', 5)))
+            else:
+                st.error(f"Spotify API error: {str(e)}")
+                raise
+        except Exception as e:
+            st.error(f"Unexpected error: {str(e)}")
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(5)
+            
 def main():
-    st.title('Spotify Top Tracks Analysis')
-    st.write('Discover insights about your top Spotify tracks.')
+    st.title('Spotify Top Tracks Analysis App')
+    st.write('Discover insights about your top Spotify tracks, yay!')
 
     # Initialize session state
     if 'auth_complete' not in st.session_state:
@@ -91,9 +109,9 @@ def main():
             sp = get_spotify_client()
             
             st.write("Fetching top tracks...")
-            top_tracks = sp.current_user_top_tracks(limit=50, time_range='medium_term')
+            top_tracks = get_top_tracks_with_retry(sp)
             
-            if not top_tracks['items']:
+            if not top_tracks or not top_tracks.get('items'):
                 st.warning("No top tracks found. Try using Spotify more and check back later!")
                 return
 
@@ -103,6 +121,10 @@ def main():
             track_ids = [track['id'] for track in top_tracks['items']]
             audio_features = sp.audio_features(track_ids)
             
+            if not audio_features:
+                st.error("Failed to retrieve audio features. Please try again later.")
+                return
+
             st.write("Creating DataFrame...")
             df = pd.DataFrame(audio_features)
             df['track_name'] = [track['name'] for track in top_tracks['items']]
