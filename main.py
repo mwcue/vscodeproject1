@@ -11,9 +11,11 @@ st.write("Debug - Available secrets:", list(st.secrets.keys()))
 
 # Retrieve Spotify API credentials from Streamlit secrets
 def get_env_variable(var_name):
+    if var_name == "REDIRECT_URI":
+        return "https://vscodeproject1mwc.streamlit.app/"
     try:
         value = st.secrets[var_name]
-        st.write(f"Debug - Retrieved {var_name}: {value}")  # Show full value for debugging
+        st.write(f"Debug - Retrieved {var_name}: {value}")
         return value
     except KeyError:
         st.error(f"Missing secret: {var_name}")
@@ -21,7 +23,9 @@ def get_env_variable(var_name):
 
 CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
-REDIRECT_URI = get_env_variable("REDIRECT_URI")
+REDIRECT_URI = "https://vscodeproject1mwc.streamlit.app/"
+
+st.write(f"Debug - Hardcoded REDIRECT_URI: {REDIRECT_URI}")
 
 # Check if all required variables are set
 if not all([CLIENT_ID, CLIENT_SECRET, REDIRECT_URI]):
