@@ -29,7 +29,7 @@ def get_spotify_client():
     return spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 # variable for top x tracks
-TOP_TRACK_LIMIT = 50
+TOP_TRACK_LIMIT = 25
 
 def get_top_tracks(sp):
     playlist_id = '37i9dQZEVXbMDoHDwVN2tF'  # Global Top 50 playlist
