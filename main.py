@@ -29,16 +29,16 @@ def get_spotify_client():
     return spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 # variable for top x tracks
-top_track_limit = 50
+TOP_TRACK_LIMIT = 50
 
 def get_top_tracks(sp):
     playlist_id = '37i9dQZEVXbMDoHDwVN2tF'  # Global Top 50 playlist
-    results = sp.playlist_tracks(playlist_id, limit=top_track_limit)
+    results = sp.playlist_tracks(playlist_id, limit=TOP_TRACK_LIMIT)
     return results['items']
             
 # Main app logic
 def main():
-    st.title('Spotify Top', top_track_limit, 'Tracks Analysis')
+    st.title(f'Spotify Top {TOP_TRACK_LIMIT} Tracks Analysis')
     st.write('Discover insights about top Spotify tracks.')
 
     sp = get_spotify_client()
@@ -62,31 +62,29 @@ def main():
     st.subheader('Audio Features of Top Tracks')
     st.write(df)
 
-    # all features (but dropped 'loudness' b/c messed up the graph more)
-    numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
-
+    # all features
+    numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
     st.subheader('Visual Comparison of all Audio Features')
     st.bar_chart(df[numerical_columns], height=500)
     
-    st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
-    correlation_matrix = df[numerical_columns].corr()
-
-   # dropped some features
+    # dropped some features
     fewer_numerical_columns = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
-
     st.subheader('Visual Comparison of (fewer) Audio Features')
     st.bar_chart(df[fewer_numerical_columns], height=600)
 
-    #heat map correlation of all features
+    # heat map correlation of all features
     st.subheader('Correlation Heatmap of Audio Features (Lower Triangle)')
     correlation_matrix = df[numerical_columns].corr()
+    
     # Create a mask for the lower triangle
     mask = np.triu(np.ones_like(correlation_matrix, dtype=bool))
+    
     # Create the heatmap
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(correlation_matrix, mask=mask, annot=False, cmap='Reds', vmin=-1, vmax=1, square=True)
-    plt.title('Correlation Heatmap (Lower Triangle, all features)')
-    st.pyplot(plt)
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(correlation_matrix, mask=mask, annot=False, cmap='Reds', vmin=-1, vmax=1, square=True, ax=ax)
+    ax.set_title('Correlation Heatmap (Lower Triangle, all features)')
+    st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
+    
