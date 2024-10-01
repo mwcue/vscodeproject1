@@ -81,8 +81,5 @@ def main():
     else:
         st.write("Waiting for authorization code...")
 
-    # Display the current page URL
-    st.write(f"Debug - Current page URL: {st.experimental_get_query_params()}")
-
 if __name__ == "__main__":
     main()
