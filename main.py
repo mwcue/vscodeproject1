@@ -1,11 +1,9 @@
 import streamlit as st
-import pandas as pd
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-from urllib.parse import quote
+import base64
+import requests
 
 # Set up Streamlit page configuration
-st.set_page_config(page_title='Spotify Song Analysis', page_icon=':musical_note:')
+st.set_page_config(page_title='Spotify API Debug', page_icon=':bug:')
 
 # Debug: Print all available secrets
 st.write("Debug - Available secrets:", list(st.secrets.keys()))
@@ -14,7 +12,7 @@ st.write("Debug - Available secrets:", list(st.secrets.keys()))
 def get_env_variable(var_name):
     try:
         value = st.secrets[var_name]
-        st.write(f"Debug - Retrieved {var_name}")
+        st.write(f"Debug - Retrieved {var_name}: {value[:5]}...{value[-5:]}")  # Show first and last 5 characters
         return value
     except KeyError:
         st.error(f"Missing secret: {var_name}")
@@ -24,89 +22,55 @@ CLIENT_ID = get_env_variable("SPOTIFY_CLIENT_ID")
 CLIENT_SECRET = get_env_variable("SPOTIFY_CLIENT_SECRET")
 REDIRECT_URI = get_env_variable("REDIRECT_URI")
 
-# Check if all required environment variables are set
+# Check if all required variables are set
 if not all([CLIENT_ID, CLIENT_SECRET, REDIRECT_URI]):
     st.error("Missing required secrets. Please check your Streamlit secrets.")
     st.stop()
 
-# Initialize Spotify authentication
-def get_spotify_auth():
-    encoded_redirect_uri = quote(REDIRECT_URI)
-    st.write(f"Debug - Original REDIRECT_URI: {REDIRECT_URI}")
-    st.write(f"Debug - Encoded REDIRECT_URI: {encoded_redirect_uri}")
-    st.write(f"Debug - CLIENT_ID: {CLIENT_ID[:5]}...") # Show first 5 characters
-    st.write(f"Debug - CLIENT_SECRET: {CLIENT_SECRET[:5]}...") # Show first 5 characters
-    return SpotifyOAuth(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        redirect_uri=encoded_redirect_uri,
-        scope='user-top-read',
-        show_dialog=True
-    )
-
 # Main function to run the Streamlit app
 def main():
-    st.title('Analysis of Your Top Spotify Tracks')
-    st.write('Discover insights about your Spotify listening habits.')
+    st.title('Spotify API Debug')
+    st.write('This page is for debugging Spotify API authentication issues.')
 
-    # Check for authentication status
-    if 'spotify_auth' not in st.session_state:
-        st.session_state['spotify_auth'] = None
+    # Generate the authorization URL manually
+    auth_url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope=user-top-read"
+    st.write(f"Debug - Generated auth URL: {auth_url}")
+    st.write(f"Please [click here]({auth_url}) to initiate Spotify login.")
 
-    # debug line
-    st.write("Debug - spotify_auth status:", 'spotify_auth' in st.session_state)
-    
-    # Handle Spotify authentication callback
+    # Check for the authorization code in the URL
     query_params = st.query_params
     if 'code' in query_params:
+        auth_code = query_params['code']
+        st.write(f"Debug - Received auth code: {auth_code[:5]}...{auth_code[-5:]}")
+
+        # Exchange the authorization code for an access token
+        token_url = "https://accounts.spotify.com/api/token"
+        authorization = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+        headers = {
+            "Authorization": f"Basic {authorization}",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {
+            "grant_type": "authorization_code",
+            "code": auth_code,
+            "redirect_uri": REDIRECT_URI
+        }
+        
         try:
-            auth_manager = get_spotify_auth()
-            auth_manager.get_access_token(query_params['code'])
-            st.session_state['spotify_auth'] = auth_manager
-            st.query_params.clear()
-            st.success("Successfully authenticated with Spotify!")
-            st.rerun()
+            response = requests.post(token_url, headers=headers, data=data)
+            st.write(f"Debug - Token exchange response status: {response.status_code}")
+            st.write(f"Debug - Token exchange response content: {response.text}")
+            
+            if response.status_code == 200:
+                token_info = response.json()
+                st.success("Successfully authenticated with Spotify!")
+                st.write(f"Access Token: {token_info['access_token'][:10]}...")
+            else:
+                st.error(f"Failed to exchange auth code for token. Status: {response.status_code}")
         except Exception as e:
-            st.error(f"Authentication error: {str(e)}")
-            return
-
-    # If not authenticated, provide login link
-    if st.session_state['spotify_auth'] is None:
-        auth_manager = get_spotify_auth()
-        auth_url = auth_manager.get_authorize_url()
-        st.write(f"Please [click here]({auth_url}) to login to Spotify.")
-        st.write("After logging in, you'll be redirected back to this app.")
-        return
-
-    # Create Spotify client
-    sp = spotipy.Spotify(auth_manager=st.session_state['spotify_auth'])
-
-    # ... rest of your code ...
-
-
-    # Select numerical columns for the bar chart, excluding 'duration_ms'
-    numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns.tolist()
-    if 'duration_ms' in numerical_columns:
-        numerical_columns.remove('duration_ms')
-        numerical_columns.remove('tempo')
-        numerical_columns.remove('time_signature')
-        numerical_columns.remove('key')
-        numerical_columns.remove('loudness')
-        numerical_columns.remove('valence')
-        numerical_columns.remove('mode')
-        # numerical_columns.remove('energy')
-        # numerical_columns.remove('danceability')
-
-
-    except Exception as e:
-        st.error(f"An error occurred while processing Spotify data: {str(e)}")
-        st.session_state['spotify_auth'] = None  # Reset auth on error
-
-# debug line
-st.write("Debug - Script reached end without errors")
+            st.error(f"An error occurred during token exchange: {str(e)}")
+    else:
+        st.write("Waiting for authorization code...")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        st.error(f"An unexpected error occurred: {str(e)}")
+    main()
