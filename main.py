@@ -33,6 +33,9 @@ def main():
     st.title('Spotify API Debug')
     st.write('This page is for debugging Spotify API authentication issues.')
 
+    # Print full REDIRECT_URI for debugging
+    st.write(f"Debug - Full REDIRECT_URI: {REDIRECT_URI}")
+
     # Generate the authorization URL manually
     encoded_redirect_uri = quote(REDIRECT_URI)
     auth_url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={encoded_redirect_uri}&scope=user-top-read"
@@ -46,8 +49,6 @@ def main():
     if 'error' in query_params:
         st.error(f"Authentication error: {query_params['error'][0]}")
         st.write(f"Debug - Full error description: {query_params.get('error_description', ['No description provided'])[0]}")
-        if 'state' in query_params:
-            st.write(f"Debug - State parameter: {query_params['state'][0]}")
     elif 'code' in query_params:
         auth_code = query_params['code'][0]
         st.write(f"Debug - Received auth code: {auth_code[:5]}...{auth_code[-5:]}")
