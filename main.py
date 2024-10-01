@@ -59,19 +59,51 @@ def main():
             except Exception as e:
                 st.error(f"Authentication failed: {str(e)}")
     
+# Main app logic
+def main():
+    st.title('Spotify Top Tracks Analysis')
+    st.write('Discover insights about your top Spotify tracks.')
+
+    # Initialize session state
+    if 'auth_complete' not in st.session_state:
+        st.session_state.auth_complete = False
+
+    # Authentication flow
+    if not st.session_state.auth_complete:
+        auth_url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={quote(REDIRECT_URI)}&scope=user-top-read"
+        st.write(f"Please [click here]({auth_url}) to log in to Spotify.")
+        
+        query_params = st.experimental_get_query_params()
+        if 'code' in query_params:
+            auth_code = query_params['code'][0]
+            try:
+                token_info = get_access_token(auth_code)
+                st.session_state['access_token'] = token_info['access_token']
+                st.session_state.auth_complete = True
+                st.success("Successfully logged in to Spotify!")
+            except Exception as e:
+                st.error(f"Authentication failed: {str(e)}")
+    
     # Main app logic
     if st.session_state.auth_complete:
         try:
+            st.write("Attempting to retrieve Spotify data...")
             sp = get_spotify_client()
+            
+            st.write("Fetching top tracks...")
             top_tracks = sp.current_user_top_tracks(limit=50, time_range='medium_term')
             
             if not top_tracks['items']:
                 st.warning("No top tracks found. Try using Spotify more and check back later!")
                 return
 
+            st.write(f"Found {len(top_tracks['items'])} top tracks.")
+            
+            st.write("Fetching audio features...")
             track_ids = [track['id'] for track in top_tracks['items']]
             audio_features = sp.audio_features(track_ids)
             
+            st.write("Creating DataFrame...")
             df = pd.DataFrame(audio_features)
             df['track_name'] = [track['name'] for track in top_tracks['items']]
             df.set_index('track_name', inplace=True)
@@ -79,7 +111,7 @@ def main():
             st.subheader('Audio Features of Your Top Tracks')
             st.write(df)
             
-            numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness']
+            numerical_columns = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence']
             
             st.subheader('Visual Comparison of Audio Features')
             st.bar_chart(df[numerical_columns], height=400)
@@ -90,6 +122,8 @@ def main():
             
         except Exception as e:
             st.error(f"An error occurred while processing Spotify data: {str(e)}")
+            st.write("Error details:", e)
+            st.write("Error type:", type(e).__name__)
             st.session_state.auth_complete = False
             if 'access_token' in st.session_state:
                 del st.session_state['access_token']
