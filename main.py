@@ -39,13 +39,6 @@ def main():
     st.title('Spotify Top Tracks Analysis')
     st.write('Discover insights about your top Spotify tracks.')
 
-    # Rest of your main function code here...
-
-if __name__ == "__main__":
-    main()def main():
-    st.title('Spotify Top Tracks Analysis')
-    st.write('Discover insights about your top Spotify tracks.')
-
     # Initialize session state
     if 'auth_complete' not in st.session_state:
         st.session_state.auth_complete = False
